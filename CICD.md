@@ -3,48 +3,59 @@
 Configure `.github/workflows/cicd.yml` to define a full CI/CD pipeline for this application
 
 ### Part 1: Write test and build job
+
 steps:
-  - [x] Set up Node
-  - [x] Install depencencies
-  - [ ] Execute tests
-  - [ ] Execute build
-  - [ ] Push the build artifact. (only If it's a push to main branch, not a PR)
+
+- [x] Set up Node
+- [x] Install depencencies
+- [x] Execute tests
+- [x] Execute build
+- [x] Push the build artifact. (only If it's a push to main branch, not a PR)
 
 ### Part 2: Write deploy job
+
 conditions:
-* (only If it's a push to main branch, not a PR)
-* (test and build job must have been successful)
+
+- (only If it's a push to main branch, not a PR)
+- (test and build job must have been successful)
 
 steps:
-  - [ ] Download the build artifact
-  - [ ] Deploy to github pages
+
+- [ ] Download the build artifact
+- [ ] Deploy to github pages
 
 ## Examples and tips
 
 ### Build step example
-* Add the `VITE_APP_PUBLIC_URL` in the build environment, with the repo name value
-* Build command will store the build artifact to `./dist` path.
+
+- Add the `VITE_APP_PUBLIC_URL` in the build environment, with the repo name value
+- Build command will store the build artifact to `./dist` path.
+
 ```
 - name: Build step
   run: npm ....
   env:
-    VITE_APP_PUBLIC_URL: /<repo_name>/  # --> /example-react-cicd/ 
+    VITE_APP_PUBLIC_URL: /<repo_name>/  # --> /example-react-cicd/
 ```
 
 ### Conditionally run a job or a step, use the `if` key.
+
 `if: github.event_name == 'push' && github.ref == 'refs/heads/main' `
 
 ### Link a job to a privious one, use `needs` key.
-* executes job2 only when job1 finished successfully
+
+- executes job2 only when job1 finished successfully
+
 ```
 jobs:
   job1:
-    
+
   job2:
     needs: job1
 ```
 
 ### Deploy job needs write permissions, use `permissions.content: write`.
+
 ```
 jobs:
   deploy:
@@ -53,9 +64,11 @@ jobs:
 ```
 
 ### Share files (artifacts) between jobs
+
 If you need to share files between jobs upload them in the repo and download them in the destination job
 
 upload:
+
 ```
 steps:
 - name: Uploading build files
@@ -63,8 +76,10 @@ steps:
   with:
     name: artifact
     path: <artifact_path>
-````		
+```
+
 download:
+
 ```
 steps:
 - name: Downloading artifact
@@ -73,9 +88,12 @@ steps:
     name: artifact
     path: <artifact_path>
 ```
+
 ### Deploy to github pages
-* use the action `peaceiris/actions-gh-pages@v3`
-* indicate which directory to publish using `publish_dir: ./<artifact_path>`
+
+- use the action `peaceiris/actions-gh-pages@v3`
+- indicate which directory to publish using `publish_dir: ./<artifact_path>`
+
 ```
       - name: Deploying to gh-pages
         uses: peaceiris/actions-gh-pages@v3
@@ -83,9 +101,11 @@ steps:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: <artifact_path>
 ```
+
 ### Github-pages requirements
-* Repository must be public
-* Enable github pages in settings
-* Update “homepage” in packages.json with the URL of your github pages site
-* Add VITE_APP_PUBLIC_URL env var with the repository name in the build step.
-* Update <BrowserRouter> basename prop in main.jsx with the repository name.
+
+- Repository must be public
+- Enable github pages in settings
+- Update “homepage” in packages.json with the URL of your github pages site
+- Add VITE_APP_PUBLIC_URL env var with the repository name in the build step.
+- Update <BrowserRouter> basename prop in main.jsx with the repository name.
